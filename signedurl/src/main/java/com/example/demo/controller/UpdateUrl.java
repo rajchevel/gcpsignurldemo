@@ -1,0 +1,45 @@
+package com.example.demo.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
+import com.google.cloud.storage.StorageOptions;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+@RestController
+@RequestMapping("/v1/api")
+public class UpdateUrl {
+	
+	@GetMapping("/test")
+	public String test() {
+		return "Thank You!";
+	}
+	
+	@GetMapping("/downloadurl")
+	public void getDownloadUrl() throws StorageException{
+			     String projectId = "car-poc-prj";
+			     String bucketName = "my-gcs-bucket-raja";
+			     String objectName = "my-gcs-bucket-raja-my-obj-name";
+
+			    Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+
+			    // Define resource
+			    BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, objectName)).build();
+
+			    URL url =
+			        storage.signUrl(blobInfo, 15, TimeUnit.MINUTES, Storage.SignUrlOption.withV4Signature());
+
+			    System.out.println("Generated GET signed URL:");
+			    System.out.println(url);
+			    System.out.println("You can use this URL with any user agent, for example:");
+			    System.out.println("curl '" + url + "'");
+			  }
+	
+
+}
